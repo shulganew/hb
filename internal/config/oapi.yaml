@@ -1,0 +1,8 @@
+package: oapi
+generate:
+  chi-server: true
+  models: true
+  embedded-spec: true
+compatibility:
+  apply-chi-middleware-first-to-last: true
+output: internal/api/oapi/hb.gen.go
