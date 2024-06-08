@@ -1,108 +1,93 @@
 package services
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"embed"
+	"encoding/hex"
 	"fmt"
+	"io/fs"
 	"net/http"
+	"strings"
 
+	"github.com/shulganew/hb.git/internal/api/oapi"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
 
+//go:embed templates/register/*
+var staticFiles embed.FS
+
+// Register form.
+func (k *Happy) NewUserForm(w http.ResponseWriter, r *http.Request, file string) {
+	fsys, err := fs.Sub(staticFiles, "templates/register")
+	if err != nil {
+		zap.S().Errorln("Path file error:", err)
+	}
+	http.ServeFileFS(w, r, fsys, file)
+}
+
 // Register new use.
 func (k *Happy) CreateUser(w http.ResponseWriter, r *http.Request) {
-	zap.S().Debugln("Create new user:", r.URL.Host)
-	/*
-		var user oapi.NewUser
-		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-			zap.S().Errorln("Can't decode json")
-			// If can't decode 400
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+	tguser := r.FormValue("tg")
+	name := r.FormValue("uname")
+	pw := r.FormValue("psw")
+	pwr := r.FormValue("pswr")
+	hbd := r.FormValue("hb")
 
-		// Set hash as user password.
-		hash, err := HashPassword(user.Password)
-		if err != nil {
-			zap.S().Errorln("Error creating hash from password")
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+	if pw != pwr {
+		http.Redirect(w, r, Answer("Password missmatch!", r.URL.Path), http.StatusSeeOther)
+	}
 
-		// Add user to database.
-		_, err = k.stor.AddUser(r.Context(), user.Login, hash, user.Email)
-		if err != nil {
-			var pgErr *pq.Error
-			// If URL exist in DataBase
-			if errors.As(err, &pgErr) && pgerrcode.UniqueViolation == pgErr.Code {
-				errt := "User's login is used"
-				zap.S().Infoln(errt, err)
-				http.Error(w, errt, http.StatusConflict)
-				return
-			}
-			return
-		}
+	// Set hash as user password.
+	pwh, err := HashPassword(pw)
+	if err != nil {
+		zap.S().Errorln("Error creating hash from password")
+		http.Redirect(w, r, Answer("Error creating hash from password: "+err.Error(), r.URL.Path), http.StatusSeeOther)
+		return
+	}
 
-		// set status code 201
-		w.WriteHeader(http.StatusCreated)
-	*/
+	err = k.stor.AddUser(r.Context(), tguser, name, pwh, hbd)
+	if err != nil {
+		zap.S().Errorln(err)
+		http.Redirect(w, r, Answer("Error adding user: "+err.Error(), r.URL.Path), http.StatusSeeOther)
+	}
+
+	http.Redirect(w, r, Answer("User added!", r.URL.Path), http.StatusSeeOther)
 }
 
 // Validate user in Keeper, if sucsess it return user's id.
-func (k *Happy) Login(w http.ResponseWriter, r *http.Request) {
-	/*
-		var nuser oapi.NewUser
-		if err := json.NewDecoder(r.Body).Decode(&nuser); err != nil {
-			// If can't decode 400
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+func (k *Happy) Login(w http.ResponseWriter, r *http.Request, params oapi.LoginParams) {
+	isValid := k.validateTG(params)
 
-		// Get User from storage
-		dbUser, err := k.stor.GetByLogin(r.Context(), nuser.Login)
-		if err != nil {
-			zap.S().Infoln("User not found by login. ", err)
-			http.Error(w, "Wrong login or password or otp", http.StatusUnauthorized)
-			return
-		}
-		// Check OTP is correct.
-		valid := totp.Validate(nuser.Otp, dbUser.Secret)
-		if !valid {
-			zap.S().Infoln("User enter wrong OTP. ")
-			http.Error(w, "Wrong login or password or otp", http.StatusUnauthorized)
-			return
-		}
+	zap.S().Infoln("Is valid user: ", isValid)
 
-		// Check pass is correct
-		err = k.CheckPassword(nuser.Password, dbUser.PassHash)
-		if err != nil {
-			http.Error(w, "Wrong login or password or otp", http.StatusUnauthorized)
-			return
-		}
+}
 
-		// Create jwt with access.
-		// For user with login = admin grand rigts to admin handlers
-		access := ""
-		if nuser.Login == "admin" {
-			access = "admin"
-		}
-		allowAll, err := k.ua.CreateJWSWithClaims(dbUser.UUID.String(), []string{access})
-		if err != nil {
-			zap.S().Errorln("Error creating jwt string: ", err)
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+// Validate telegram user auth request.
+func (k *Happy) validateTG(params oapi.LoginParams) (isValid bool) {
+	// Construct data_check_string.
+	data := strings.Join([]string{"auth_date=" + params.AuthDate, "first_name=" + params.FirstName, "id=" + params.Id, "last_name=" + params.LastName, "photo_url=" + params.PhotoUrl, "username=" + params.Username}, "\n")
 
-		w.Header().Add("Content-Type", "text/plain")
-		w.Header().Add("Authorization", config.AuthPrefix+string(allowAll))
+	// Get secret key.
+	hasher := sha256.New()
+	hasher.Write([]byte(k.conf.Bot))
+	key := hasher.Sum(nil)
 
-		// set status code 200
-		w.WriteHeader(http.StatusOK)
+	// Get HMAC 256.
+	sig := hmac.New(sha256.New, key)
+	sig.Write([]byte(data))
 
-		_, err = w.Write([]byte("User loged in."))
-		if err != nil {
-			zap.S().Errorln("Can't write to response in LoginUser handler", err)
-		}
-	*/
+	// Calculate message hash.
+	cHash := hex.EncodeToString(sig.Sum(nil))
+
+	// Check is valid telegram hash.
+	if cHash == params.Hash {
+		zap.S().Debugln("Valid")
+		return true
+	}
+	zap.S().Debugln("Not Valid")
+	return
 }
 
 // HashPassword returns the bcrypt hash of the password.
@@ -112,4 +97,13 @@ func HashPassword(password string) (string, error) {
 		return "", fmt.Errorf("failed to hash password: %w", err)
 	}
 	return string(hashedPassword), nil
+}
+
+// Answer page constructor.
+func Answer(ans, path string) string {
+	var sb strings.Builder
+	sb.WriteString(path)
+	sb.WriteString("/status.html?status=")
+	sb.WriteString(ans)
+	return sb.String()
 }

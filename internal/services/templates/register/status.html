@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>HB Registration</title>
+
+    <script>
+      function setStatus() {
+        const params = new Proxy(new URLSearchParams(window.location.search), {
+        get: (searchParams, prop) => searchParams.get(prop),
+        });
+      
+      let val = params.status; 
+      var s = document.getElementById("st");
+      s.innerHTML = val;
+      }
+      window.onload = setStatus;
+      </script>
+
+</head>
+<body>
+
+<h1>Status:</h1>
+<h2 id="st"></h2> 
+    
+</body>
+</html>

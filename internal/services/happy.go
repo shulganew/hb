@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 
-	"github.com/gofrs/uuid"
 	"github.com/shulganew/hb.git/internal/api/oapi"
 	"github.com/shulganew/hb.git/internal/config"
 	"github.com/shulganew/hb.git/internal/entities"
@@ -12,7 +11,6 @@ import (
 // User creation, registration
 type Happy struct {
 	stor Happyer
-
 	conf config.Config
 	// hashes []entities.EKeyMem // Autentificated telegram users.
 }
@@ -25,7 +23,7 @@ func NewHappy(ctx context.Context, stor Happyer, conf config.Config) *Happy {
 
 type Happyer interface {
 	// Happy
-	AddUser(ctx context.Context, login, hash, email string) (userID *uuid.UUID, err error)
+	AddUser(ctx context.Context, tguser, name, pwhash, hbd string) (err error)
 	GetByLogin(ctx context.Context, login string) (userID *entities.User, err error)
 
 	// Entities credentials methods (site, card, text, file)

@@ -1,8 +1,0 @@
-2024-06-07T11:24:42+03:00	INFO	app/init.go:54	logger construction succeeded
-2024-06-07T11:24:42+03:00	INFO	app/init.go:89	Application init complite
-2024-06-07T11:24:44+03:00	INFO	app/server.go:42	Server web has been graceful shutdown.
-2024-06-07T11:24:44+03:00	INFO	hb/main.go:61	App done.
-2024-06-07T11:24:46+03:00	INFO	app/init.go:54	logger construction succeeded
-2024-06-07T11:24:46+03:00	INFO	app/init.go:89	Application init complite
-2024-06-07T11:24:46+03:00	INFO	app/server.go:42	Server web has been graceful shutdown.
-2024-06-07T11:24:46+03:00	INFO	hb/main.go:61	App done.

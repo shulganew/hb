@@ -17,3 +17,7 @@ pg:
 .PHONY: pg-stop
 pg-stop:
 	docker stop happydb_v1
+
+.PHONY: swagger
+swagger:
+	go run github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen --config=internal/config/oapi.yaml --package oapi api/api.yaml

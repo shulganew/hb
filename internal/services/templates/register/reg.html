@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>HB Registration</title>
+</head>
+<body>
+
+<form action="/register" method="POST">
+      <div class="container">
+        <h1>New Happy user register</h1>
+        <p>Please fill in this form to create an account:</p>
+        <hr>
+    
+        <label for="tg"><b>Telegram user</b></label>
+        <input type="text" placeholder="@username" name="tg" id="tg" required />
+        <hr>
+
+        <label for="uname"><b>Name</b></label>
+        <input type="text" placeholder="Igor" name="uname" id="uname" required />
+        <hr>
+
+        <label for="psw"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" name="psw" id="psw" required />
+        <hr>
+
+        <label for="pswr"><b>Repeat Password</b></label>
+        <input type="password" placeholder="Repeat Password" name="pswr" id="pswr" required />
+        <hr>
+
+        <label for="hb"><b>Birthday:</b></label>
+        <input type="date" name="hb" value="2000-01-01" id="hb" required />
+        <hr>
+        
+        <button type="submit" class="registerbtn">Register</button>
+      </div>
+
+    </form>
+    
+</body>
+</html>

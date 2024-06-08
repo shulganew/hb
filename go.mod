@@ -7,12 +7,14 @@ toolchain go1.22.4
 require github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 
 require (
+	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/deepmap/oapi-codegen/v2 v2.2.0 // indirect
 	github.com/getkin/kin-openapi v0.124.0 // indirect
 	github.com/go-chi/chi/v5 v5.0.12 // indirect
 	github.com/go-openapi/jsonpointer v0.20.2 // indirect
 	github.com/go-openapi/swag v0.22.8 // indirect
 	github.com/gofrs/uuid v4.4.0+incompatible // indirect
+	github.com/google/uuid v1.5.0 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/invopop/yaml v0.2.0 // indirect
 	github.com/jackc/pgerrcode v0.0.0-20240316143900-6e2875d9b438 // indirect
@@ -22,6 +24,7 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/oapi-codegen/nethttp-middleware v1.0.2 // indirect
+	github.com/oapi-codegen/runtime v1.1.1 // indirect
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect

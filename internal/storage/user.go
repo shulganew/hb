@@ -5,31 +5,28 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/gofrs/uuid"
 	"github.com/jackc/pgerrcode"
 	"github.com/lib/pq"
 	"github.com/shulganew/hb.git/internal/entities"
 	"go.uber.org/zap"
 )
 
-func (r *Repo) AddUser(ctx context.Context, login, hash, email string) (*uuid.UUID, error) {
+func (r *Repo) AddUser(ctx context.Context, tguser, name, pwhash, hbd string) (err error) {
 	query := `
-	INSERT INTO users (login, password_hash, email, otp_key) 
+	INSERT INTO users (tg_user, name, password_hash, hb) 
 	VALUES ($1, $2, $3, $4)
-	RETURNING user_id
 	`
-	userID := &uuid.UUID{}
 
-	err := r.db.GetContext(ctx, userID, query, login, hash, email)
+	_, err = r.db.ExecContext(ctx, query, tguser, name, pwhash, hbd)
 	if err != nil {
 		var pgErr *pq.Error
 		// If URL exist in DataBase.
 		if errors.As(err, &pgErr) && pgerrcode.UniqueViolation == pgErr.Code {
-			return nil, pgErr
+			return pgErr
 		}
-		return nil, fmt.Errorf("error adding user to Storage: %w", err)
+		return fmt.Errorf("error adding user to Storage: %w", err)
 	}
-	return userID, nil
+	return
 }
 
 // Retrive User by login.

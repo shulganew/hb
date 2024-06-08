@@ -12,54 +12,137 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 paths:
-  /auth/register:
-    post:
-      summary: User registration
-      description: Handler make new user ristration
-      operationId: CreateUser
+  /register/{file}:
+    get:
+      summary: registration form 
+      description: new user registration form
+      operationId: NewUserForm
       parameters:
-      requestBody:
-        description: User add to the store
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NewUser'  
+        - name: file
+          in: path
+          description: ID of file to return
+          required: true
+          schema:
+            type: string
+            format: string
       responses:
-        '201':
-          description: User created, return OTP secret
-          content:
-            plain/text:
-              schema:
-                type: string
-                format: string
+        '200':
+          description: Listed files
+        '204':
+          description: No content
         '400':
-          description: Error creating hash from password
+          description: Error decode json
         '401':
-          description: user has no otp pass, create new
-        '409':
-          description: Login is used
+          description: User not authorized
         '500':
-          description: Can't get UUID or user hash 
+          description: Internal error site listing
         default:
           description: unexpected error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /auth/login:
+  /register:
     post:
+      summary: add mew user
+      description: add new user
+      operationId: CreateUser
+      parameters:
+      requestBody:
+        description: User login from telegram
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                tg:
+                  type: string
+                uname:
+                  type: string
+                psw:
+                  type: string
+                pswr:
+                  type: string
+                hb:
+                  type: string
+              required:
+                - tg
+                - uname
+                - psw
+                - pswr
+                - hb
+        '200':
+          description: Listed files
+        '204':
+          description: No content
+        '400':
+          description: Error decode json
+        '401':
+          description: User not authorized
+        '500':
+          description: Internal error site listing
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /login:
+    get:
       summary: User login
       description: Handler make existing user auth (login)
       operationId: Login
       parameters:
-      requestBody:
-        description: Login New User
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NewUser'  
+        - name: auth_date
+          in: query
+          description: ID of file to return
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: first_name
+          in: query
+          description: first name
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: id
+          in: query
+          description: ID telegram user
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: last_name
+          in: query
+          description: last name
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: photo_url
+          in: query
+          description: phote
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: username
+          in: query
+          description: telegram @user
+          required: true
+          schema:
+            type: string
+            format: string
+        - name: hash
+          in: query
+          description: hash
+          required: true
+          schema:
+            type: string
+            format: string
       responses:
         '200':
           description: Successful login
@@ -90,7 +173,7 @@ components:
         - login
         - password
         - email
-        - otp
+        - hb
       properties:
         login:
           type: string
@@ -101,9 +184,10 @@ components:
         email:
           type: string
           description: Users email
-        otp:
+        hb:
           type: string
-          description: User's one time pass
+          format: date
+          description: Happy birthday day
     Error:
       required:
         - code
