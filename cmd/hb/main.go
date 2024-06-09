@@ -1,6 +1,7 @@
 package main
 
 import (
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	router "github.com/shulganew/hb.git/internal/api"
 	"github.com/shulganew/hb.git/internal/api/oapi"
 	"github.com/shulganew/hb.git/internal/app"
@@ -44,6 +45,12 @@ func main() {
 	hs := services.NewHappy(ctx, stor, conf)
 
 	// BOT service.
+	// Create new bot.
+	b, err := tgbotapi.NewBotAPI(conf.Bot)
+	if err != nil {
+		panic(err)
+	}
+
 	bs := services.NewBot(ctx, stor, conf)
 
 	// We now register our GophKeeper above as the handler for the interface.
@@ -52,10 +59,10 @@ func main() {
 	// Start web server.
 	restDone := app.StartAPI(ctx, conf, componentsErrs, rt)
 
-	botDone := app.StartBot(ctx, conf, bs, componentsErrs)
+	botDone := app.StartBot(ctx, conf, b, bs, componentsErrs)
 
 	// Start cron.
-	c := app.InitCron(ctx, bs)
+	c := app.InitCron(ctx, b, bs)
 
 	// Graceful shutdown.
 	app.Graceful(ctx, cancel, componentsErrs)

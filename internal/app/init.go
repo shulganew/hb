@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/jmoiron/sqlx"
-	"github.com/robfig/cron/v3"
 	"github.com/shulganew/hb.git/internal/bot"
 	"github.com/shulganew/hb.git/internal/config"
 	"github.com/shulganew/hb.git/internal/services"
@@ -95,18 +95,11 @@ func InitStore(ctx context.Context, conf config.Config) (stor *storage.Repo, err
 }
 
 // Telegram bot api handler.
-func StartBot(ctx context.Context, conf config.Config, bs *services.Bot, componentsErrs chan error) (botDone chan struct{}) {
+func StartBot(ctx context.Context, conf config.Config, b *tgbotapi.BotAPI, bs *services.Bot, componentsErrs chan error) (botDone chan struct{}) {
 	// Graceful shutdown.
 	botDone = make(chan struct{})
 
 	// Start bot handling.
-	go bot.BotHandler(ctx, conf, bs, componentsErrs, botDone)
-	return
-}
-
-func InitCron(ctx context.Context, bs *services.Bot) (c *cron.Cron) {
-	c = cron.New()
-	c.AddFunc("* * * * *", func() { fmt.Println("Every minute") })
-	c.Start()
+	go bot.BotHandler(ctx, conf, b, bs, componentsErrs, botDone)
 	return
 }

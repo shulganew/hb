@@ -111,6 +111,24 @@ func (b Bot) Resiver(eAction string) string {
 	return fmt.Sprintln("Subscribe to the user", action.Subscribed)
 }
 
+// Check happy birthday and make notifications.
+func (b Bot) CheckHB(ctx context.Context) (users []entities.User) {
+	users, err := b.stor.ListBithdayMan(ctx)
+	if err != nil {
+		zap.S().Errorln(err)
+		return []entities.User{}
+	}
+	return
+}
+func (b Bot) GetNOtifyChats(ctx context.Context, user entities.User) (chats []int64) {
+	chats, err := b.stor.GetNotifyChats(ctx, user.Tg)
+	if err != nil {
+		zap.S().Errorln(err)
+		return []int64{}
+	}
+	return
+}
+
 // Function for working with actions.
 func EndcodeAction(action entities.Action) string {
 	ecnoded, err := json.Marshal(action)

@@ -30,6 +30,10 @@ type Happyer interface {
 	ListCurrentSub(ctx context.Context, user string) ([]entities.User, error)
 	AddSubscription(ctx context.Context, tguser, subscribed string, chatID int64) (err error)
 	RemoveSubscription(ctx context.Context, tguser, subscribed string) (err error)
+	GetNotifyChats(ctx context.Context, tguser string) (chatIDs []int64, err error)
+	// Cron.
+	// Return happy users.
+	ListBithdayMan(ctx context.Context) ([]entities.User, error)
 
 	// Entities credentials methods (site, card, text, file)
 }

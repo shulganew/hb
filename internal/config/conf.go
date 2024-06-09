@@ -9,6 +9,8 @@ import (
 const AuthPrefix = "Bearer "
 const TokenExp = time.Hour * 3600
 const DataBaseType = "postgres"
+const Cron = "* * * * *"
+const Domain = "https://dlearn.ru"
 
 type Config struct {
 	Bot     string // telegram bot token.
