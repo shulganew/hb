@@ -26,6 +26,7 @@ require (
 	github.com/oapi-codegen/nethttp-middleware v1.0.2 // indirect
 	github.com/oapi-codegen/runtime v1.1.1 // indirect
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
+	github.com/robfig/cron/v3 v3.0.1 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/crypto v0.24.0 // indirect

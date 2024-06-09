@@ -40,7 +40,11 @@ func main() {
 	// Create router.
 	rt := router.Route(conf, swagger)
 
+	// API service.
 	hs := services.NewHappy(ctx, stor, conf)
+
+	// BOT service.
+	bs := services.NewBot(ctx, stor, conf)
 
 	// We now register our GophKeeper above as the handler for the interface.
 	oapi.HandlerFromMux(hs, rt)
@@ -48,7 +52,10 @@ func main() {
 	// Start web server.
 	restDone := app.StartAPI(ctx, conf, componentsErrs, rt)
 
-	botDone := app.StartBot(ctx, conf, componentsErrs)
+	botDone := app.StartBot(ctx, conf, bs, componentsErrs)
+
+	// Start cron.
+	c := app.InitCron(ctx, bs)
 
 	// Graceful shutdown.
 	app.Graceful(ctx, cancel, componentsErrs)
@@ -57,6 +64,7 @@ func main() {
 	<-restDone
 	// Telega shutdown.
 	<-botDone
-
+	// Stop scheduler.
+	c.Stop()
 	zap.S().Infoln("App done.")
 }

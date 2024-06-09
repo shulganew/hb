@@ -35,9 +35,13 @@ func (k *Happy) CreateUser(w http.ResponseWriter, r *http.Request) {
 	pwr := r.FormValue("pswr")
 	hbd := r.FormValue("hb")
 
+	// Check password
 	if pw != pwr {
 		http.Redirect(w, r, Answer("Password missmatch!", r.URL.Path), http.StatusSeeOther)
 	}
+
+	// Check tg user at prefix.
+	tguser = strings.TrimPrefix(tguser, "@")
 
 	// Set hash as user password.
 	pwh, err := HashPassword(pw)

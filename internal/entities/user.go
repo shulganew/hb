@@ -1,11 +1,15 @@
 package entities
 
-import "github.com/gofrs/uuid"
+import (
+	"time"
+
+	"github.com/gofrs/uuid"
+)
 
 type User struct {
-	Login    string    `db:"login"`
-	Password string    `db:"password"`
+	Tg       string    `db:"tg_user"` // Telegram user nik name ie @user.
+	Name     string    `db:"name"`
 	PassHash string    `db:"password_hash"`
-	Email    string    `db:"email"`
+	Hb       time.Time `db:"hb"` // Happy birthday day.
 	UUID     uuid.UUID `db:"user_id"`
 }

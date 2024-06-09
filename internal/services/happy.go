@@ -12,7 +12,6 @@ import (
 type Happy struct {
 	stor Happyer
 	conf config.Config
-	// hashes []entities.EKeyMem // Autentificated telegram users.
 }
 
 func NewHappy(ctx context.Context, stor Happyer, conf config.Config) *Happy {
@@ -22,9 +21,15 @@ func NewHappy(ctx context.Context, stor Happyer, conf config.Config) *Happy {
 }
 
 type Happyer interface {
-	// Happy
+	// Happy user.
 	AddUser(ctx context.Context, tguser, name, pwhash, hbd string) (err error)
-	GetByLogin(ctx context.Context, login string) (userID *entities.User, err error)
+
+	// Happy bot.
+	ListAll(ctx context.Context) ([]entities.User, error)
+	ListAllAvailableSub(ctx context.Context, user string) ([]entities.User, error)
+	ListCurrentSub(ctx context.Context, user string) ([]entities.User, error)
+	AddSubscription(ctx context.Context, tguser, subscribed string, chatID int64) (err error)
+	RemoveSubscription(ctx context.Context, tguser, subscribed string) (err error)
 
 	// Entities credentials methods (site, card, text, file)
 }

@@ -8,7 +8,10 @@ import (
 	"syscall"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/robfig/cron/v3"
+	"github.com/shulganew/hb.git/internal/bot"
 	"github.com/shulganew/hb.git/internal/config"
+	"github.com/shulganew/hb.git/internal/services"
 	"github.com/shulganew/hb.git/internal/storage"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -89,4 +92,21 @@ func InitStore(ctx context.Context, conf config.Config) (stor *storage.Repo, err
 	zap.S().Infoln("Application init complite")
 	return stor, nil
 
+}
+
+// Telegram bot api handler.
+func StartBot(ctx context.Context, conf config.Config, bs *services.Bot, componentsErrs chan error) (botDone chan struct{}) {
+	// Graceful shutdown.
+	botDone = make(chan struct{})
+
+	// Start bot handling.
+	go bot.BotHandler(ctx, conf, bs, componentsErrs, botDone)
+	return
+}
+
+func InitCron(ctx context.Context, bs *services.Bot) (c *cron.Cron) {
+	c = cron.New()
+	c.AddFunc("* * * * *", func() { fmt.Println("Every minute") })
+	c.Start()
+	return
 }
