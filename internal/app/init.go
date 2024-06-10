@@ -54,7 +54,7 @@ func InitLog(conf config.Config) zap.SugaredLogger {
 	}
 
 	zapLogger := zap.Must(cfg.Build())
-	zapLogger.Info("logger construction succeeded")
+	zapLogger.Info("logger construction succeeded: " + conf.ZapLevel)
 	zap.ReplaceGlobals(zapLogger)
 	defer func() {
 		_ = zapLogger.Sync()
@@ -88,10 +88,9 @@ func InitStore(ctx context.Context, conf config.Config) (stor *pg.Repo, err erro
 	if err != nil {
 		return nil, err
 	}
-
+	zap.S().Debugln("Level Debug!")
 	zap.S().Infoln("Application init complite")
 	return stor, nil
-
 }
 
 // Telegram bot api handler.

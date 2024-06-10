@@ -21,4 +21,9 @@ pg-stop:
 .PHONY: swagger
 swagger:
 	go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen --config=internal/config/oapi.yaml --package oapi api/api.yaml
-	
+
+.PHONY: build_linux
+build_linux: export GOOS=linux
+build_linux: export GOARCH=amd64
+build_linux: 
+	go build -o cmd/hb/hb_$(GOOS)_$(GOARCH) cmd/hb/main.go

@@ -19,6 +19,7 @@ func main() {
 	// Init application logging.
 	app.InitLog(conf)
 
+	zap.S().Debugf("App config: %#v \n", conf)
 	// Root app context.
 	ctx, cancel := app.InitContext()
 
@@ -38,7 +39,7 @@ func main() {
 	// Create new bot.
 	b, err := tgbotapi.NewBotAPI(conf.Bot)
 	if err != nil {
-		panic(err)
+		zap.S().Fatalln(err)
 	}
 
 	bs := services.NewBot(ctx, stor, conf, mem)

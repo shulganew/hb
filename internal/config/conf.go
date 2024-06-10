@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 const AuthPrefix = "Bearer "
 const TokenExp = time.Hour * 3600
 const DataBaseType = "postgres"
-const Cron = "* * * * *"
-const Domain = "https://dlearn.ru"
+const Cron = "0 13 * * *"
+const Domain = "https://dlearn.ru/hb/login"
 
 type Config struct {
 	Bot     string // telegram bot token.
@@ -67,5 +69,7 @@ func InitConfig() Config {
 		fmt.Println("ENV HB_DSN_URI not set")
 	}
 	config.DSN = dsn
+
+	zap.S().Debugf("Config: %#v \n", config)
 	return config
 }

@@ -37,7 +37,7 @@ func (k *Happy) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	// Check password
 	if pw != pwr {
-		http.Redirect(w, r, Answer("Password missmatch!", r.URL.Path), http.StatusSeeOther)
+		http.Redirect(w, r, Answer("Password missmatch!"), http.StatusSeeOther)
 	}
 
 	// Check tg user at prefix.
@@ -47,25 +47,29 @@ func (k *Happy) CreateUser(w http.ResponseWriter, r *http.Request) {
 	pwh, err := HashPassword(pw)
 	if err != nil {
 		zap.S().Errorln("Error creating hash from password")
-		http.Redirect(w, r, Answer("Error creating hash from password: "+err.Error(), r.URL.Path), http.StatusSeeOther)
+		http.Redirect(w, r, Answer("Error creating hash from password: "+err.Error()), http.StatusSeeOther)
 		return
 	}
 
 	err = k.stor.AddUser(r.Context(), tguser, name, pwh, hbd)
 	if err != nil {
 		zap.S().Errorln(err)
-		http.Redirect(w, r, Answer("Error adding user: "+err.Error(), r.URL.Path), http.StatusSeeOther)
+		http.Redirect(w, r, Answer("Error adding user: "+err.Error()), http.StatusSeeOther)
 	}
 
-	http.Redirect(w, r, Answer("User added!", r.URL.Path), http.StatusSeeOther)
+	http.Redirect(w, r, Answer("User added!"), http.StatusSeeOther)
 }
 
 // Validate user in Keeper, if sucsess it return user's id.
 func (k *Happy) Login(w http.ResponseWriter, r *http.Request, params oapi.LoginParams) {
 	zap.S().Debugln("Get loing request: ", r.URL.RawQuery)
 	isValid := k.validateTG(params)
-	zap.S().Debugln("Is valid user: ", isValid)
-	k.memory.Add(params.Username)
+	if isValid {
+		k.memory.Add(params.Username)
+		http.Redirect(w, r, Answer("User Loged in!"), http.StatusSeeOther)
+	} else {
+		http.Redirect(w, r, "/hb/register/reg.html", http.StatusSeeOther)
+	}
 }
 
 // Validate telegram user auth request.
@@ -104,10 +108,9 @@ func HashPassword(password string) (string, error) {
 }
 
 // Answer page constructor.
-func Answer(ans, path string) string {
+func Answer(ans string) string {
 	var sb strings.Builder
-	sb.WriteString(path)
-	sb.WriteString("/status.html?status=")
+	sb.WriteString("/hb/register/status.html?status=")
 	sb.WriteString(ans)
 	return sb.String()
 }

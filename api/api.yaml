@@ -12,7 +12,7 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 paths:
-  /hb/register/{file}:
+  /register/{file}:
     get:
       summary: registration form 
       description: new user registration form
@@ -20,7 +20,7 @@ paths:
       parameters:
         - name: file
           in: path
-          description: ID of file to return
+          description: 
           required: true
           schema:
             type: string
@@ -42,7 +42,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /hb/register:
+  /register:
     post:
       summary: add mew user
       description: add new user
@@ -88,7 +88,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /hb/login:
+  /login:
     get:
       summary: User login
       description: Handler make existing user auth (login)

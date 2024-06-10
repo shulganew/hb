@@ -27,9 +27,9 @@ func BotHandler(ctx context.Context, conf config.Config, b *tgbotapi.BotAPI, bs 
 		// Read bot updates.
 		case update := <-updates:
 			if update.Message != nil {
-
 				// Check is loged in user.
 				if !bs.IsLogedIn(update.Message.From.UserName) {
+					zap.S().Debugln("User not loged in: ", update.Message.From.UserName)
 					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Для начала работы выполните регистрацю.")
 					msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
 						tgbotapi.NewInlineKeyboardRow(
