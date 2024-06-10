@@ -12,7 +12,7 @@ import (
 	"github.com/shulganew/hb.git/internal/bot"
 	"github.com/shulganew/hb.git/internal/config"
 	"github.com/shulganew/hb.git/internal/services"
-	"github.com/shulganew/hb.git/internal/storage"
+	"github.com/shulganew/hb.git/internal/storage/pg"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -76,7 +76,7 @@ func InitContext() (ctx context.Context, cancel context.CancelFunc) {
 	return
 }
 
-func InitStore(ctx context.Context, conf config.Config) (stor *storage.Repo, err error) {
+func InitStore(ctx context.Context, conf config.Config) (stor *pg.Repo, err error) {
 	// Connection for Database.
 	db, err := sqlx.Connect(config.DataBaseType, conf.DSN)
 	if err != nil {
@@ -84,7 +84,7 @@ func InitStore(ctx context.Context, conf config.Config) (stor *storage.Repo, err
 	}
 
 	// Load storage.
-	stor, err = storage.NewRepo(ctx, db)
+	stor, err = pg.NewRepo(ctx, db)
 	if err != nil {
 		return nil, err
 	}

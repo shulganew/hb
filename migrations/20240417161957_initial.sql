@@ -22,7 +22,7 @@ INSERT INTO users (tg_user, name, password_hash, hb) VALUES ('shulgaigor', 'Igor
 INSERT INTO users (tg_user, name, password_hash, hb) VALUES ('Oleg', 'Oleg', '$2a$10$VQdSYvDhYtzjTE72FwtxU.6Pm5aT50baHWKVI3mtb8arQG18O5X9i', '1975-10-20');
 INSERT INTO users (tg_user, name, password_hash, hb) VALUES ('Anya', 'Anya', '$2a$10$VQdSYvDhYtzjTE72FwtxU.6Pm5aT50baHWKVI3mtb8arQG18O5X9i', '1999-04-14');
 INSERT INTO users (tg_user, name, password_hash, hb) VALUES ('Marina', 'Marina', '$2a$10$VQdSYvDhYtzjTE72FwtxU.6Pm5aT50baHWKVI3mtb8arQG18O5X9i', '2000-01-11');
-INSERT INTO users (tg_user, name, password_hash, hb) VALUES ('MrToday', 'MrToday', '$2a$10$VQdSYvDhYtzjTE72FwtxU.6Pm5aT50baHWKVI3mtb8arQG18O5X9i', '2000-06-09');
+INSERT INTO users (tg_user, name, password_hash, hb) VALUES ('MrToday', 'MrToday', '$2a$10$VQdSYvDhYtzjTE72FwtxU.6Pm5aT50baHWKVI3mtb8arQG18O5X9i', '2000-06-10');
 -- +goose StatementEnd
 -- +goose Down
 -- +goose StatementBegin

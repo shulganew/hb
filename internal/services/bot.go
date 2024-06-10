@@ -13,24 +13,19 @@ import (
 
 // User creation, registration
 type Bot struct {
-	stor    Happyer
-	conf    config.Config
-	logedIn map[string]struct{} // Autentificated telegram users.
+	stor   Happyer
+	conf   config.Config
+	memory Memer
 }
 
-func NewBot(ctx context.Context, stor Happyer, conf config.Config) *Bot {
-	ln := make(map[string]struct{}, 0)
-
-	// TODO remove!
-	ln["shulgaigor"] = struct{}{}
-
-	bs := &Bot{stor: stor, conf: conf, logedIn: ln}
+func NewBot(ctx context.Context, stor Happyer, conf config.Config, m Memer) *Bot {
+	bs := &Bot{stor: stor, conf: conf, memory: m}
 	return bs
 }
 
 // Check if user loged in.
 func (b Bot) IsLogedIn(tg string) (isLogedIn bool) {
-	_, ok := b.logedIn[tg]
+	ok := b.memory.Get(tg)
 	if ok {
 		return true
 	}

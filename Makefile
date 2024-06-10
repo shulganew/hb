@@ -20,4 +20,5 @@ pg-stop:
 
 .PHONY: swagger
 swagger:
-	go run github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen --config=internal/config/oapi.yaml --package oapi api/api.yaml
+	go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen --config=internal/config/oapi.yaml --package oapi api/api.yaml
+	

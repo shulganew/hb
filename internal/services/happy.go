@@ -10,13 +10,13 @@ import (
 
 // User creation, registration
 type Happy struct {
-	stor Happyer
-	conf config.Config
+	stor   Happyer
+	conf   config.Config
+	memory Memer
 }
 
-func NewHappy(ctx context.Context, stor Happyer, conf config.Config) *Happy {
-	hb := &Happy{stor: stor, conf: conf}
-
+func NewHappy(ctx context.Context, stor Happyer, conf config.Config, m Memer) *Happy {
+	hb := &Happy{stor: stor, conf: conf, memory: m}
 	return hb
 }
 
@@ -36,6 +36,11 @@ type Happyer interface {
 	ListBithdayMan(ctx context.Context) ([]entities.User, error)
 
 	// Entities credentials methods (site, card, text, file)
+}
+type Memer interface {
+	// Memory storage.
+	Add(user string)
+	Get(user string) bool
 }
 
 // Check interfaces.

@@ -62,10 +62,10 @@ func (k *Happy) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 // Validate user in Keeper, if sucsess it return user's id.
 func (k *Happy) Login(w http.ResponseWriter, r *http.Request, params oapi.LoginParams) {
+	zap.S().Debugln("Get loing request: ", r.URL.RawQuery)
 	isValid := k.validateTG(params)
-
-	zap.S().Infoln("Is valid user: ", isValid)
-
+	zap.S().Debugln("Is valid user: ", isValid)
+	k.memory.Add(params.Username)
 }
 
 // Validate telegram user auth request.

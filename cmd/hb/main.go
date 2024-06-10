@@ -7,6 +7,7 @@ import (
 	"github.com/shulganew/hb.git/internal/app"
 	"github.com/shulganew/hb.git/internal/config"
 	"github.com/shulganew/hb.git/internal/services"
+	"github.com/shulganew/hb.git/internal/storage/mem"
 	"go.uber.org/zap"
 )
 
@@ -30,6 +31,18 @@ func main() {
 		zap.S().Fatalln(err)
 	}
 
+	// Init mem storage.
+	mem := mem.NewMemory()
+
+	// BOT service.
+	// Create new bot.
+	b, err := tgbotapi.NewBotAPI(conf.Bot)
+	if err != nil {
+		panic(err)
+	}
+
+	bs := services.NewBot(ctx, stor, conf, mem)
+
 	swagger, err := oapi.GetSwagger()
 	if err != nil {
 		zap.S().Fatalln(err)
@@ -42,16 +55,7 @@ func main() {
 	rt := router.Route(conf, swagger)
 
 	// API service.
-	hs := services.NewHappy(ctx, stor, conf)
-
-	// BOT service.
-	// Create new bot.
-	b, err := tgbotapi.NewBotAPI(conf.Bot)
-	if err != nil {
-		panic(err)
-	}
-
-	bs := services.NewBot(ctx, stor, conf)
+	hs := services.NewHappy(ctx, stor, conf, mem)
 
 	// We now register our GophKeeper above as the handler for the interface.
 	oapi.HandlerFromMux(hs, rt)
