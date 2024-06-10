@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/shulganew/hb.git/internal/api/oapi"
@@ -35,7 +36,14 @@ func (k *Happy) CreateUser(w http.ResponseWriter, r *http.Request) {
 	pwr := r.FormValue("pswr")
 	hbd := r.FormValue("hb")
 
-	// Check password
+	// Remove injections.
+	tguser = regexp.MustCompile(`[^a-zA-Z0-9@\s]+`).ReplaceAllString(tguser, "")
+	name = regexp.MustCompile(`[^a-zA-Z0-9\s]+`).ReplaceAllString(name, "")
+	pw = regexp.MustCompile(`[^a-zA-Z0-9#@\s]+`).ReplaceAllString(pw, "")
+	hbd = regexp.MustCompile(`[^0-9#@\s-]+`).ReplaceAllString(hbd, "")
+
+	zap.S().Debugf("New Registration! %s  %s  %s \n", tguser, name, hbd)
+	// Check password.
 	if pw != pwr {
 		http.Redirect(w, r, Answer("Password missmatch!"), http.StatusSeeOther)
 	}
